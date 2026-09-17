@@ -88,7 +88,8 @@ async function writeCredits(destDir, manifest) {
 
 async function crawlKeyword({ browser, keyword, sites, limit, concurrency, minBytes, outRoot }) {
   console.log(`\n=== キーワード: "${keyword}" ===`);
-  const destDir = path.join(outRoot, slugify(keyword));
+  const keywordSlug = slugify(keyword);
+  const destDir = path.join(outRoot, keywordSlug);
   await mkdir(destDir, { recursive: true });
 
   const manifestPath = path.join(destDir, 'manifest.json');
@@ -125,10 +126,12 @@ async function crawlKeyword({ browser, keyword, sites, limit, concurrency, minBy
             pageUrl: item.pageUrl,
             destDir,
             userAgent: DEFAULT_USER_AGENT,
+            filenamePrefix: keywordSlug,
             minBytes,
           });
           downloadedUrls.add(item.imageUrl);
           return {
+            keyword,
             site: site.id,
             siteLabel: site.label,
             imageUrl: item.imageUrl,

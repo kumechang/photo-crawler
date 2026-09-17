@@ -84,3 +84,36 @@ export async function collectImages(page, { minWidth = 200, minHeight = 150 } = 
     minHeight
   );
 }
+
+// 実際のクロールで、'networkidle2' だと広告/計測タグが常時通信し続けて
+// タイムアウトするサイト(Foodiesfeedなど)や、初回描画後にクライアント側で
+// 再ナビゲーションが起きて評価中に "Execution context was destroyed" になる
+// サイト(Unsplashなど)があることが分かっているため、
+// - 待機条件は 'domcontentloaded' + img出現待ちに緩める
+// - 評価中にナビゲーションで失敗した場合は少し待って1回だけ再試行する
+// という共通ロジックにまとめる。
+const RETRYABLE_ERROR = /Execution context was destroyed|Target closed|detached Frame/i;
+
+export async function gotoAndCollect(
+  page,
+  url,
+  { minWidth = 200, minHeight = 150, scrollSteps = 5, scrollDelay = 600, timeout = 45000 } = {}
+) {
+  const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout });
+  await page.waitForSelector('img', { timeout: 15000 }).catch(() => {});
+
+  const scrollAndCollect = async () => {
+    await autoScroll(page, { steps: scrollSteps, delay: scrollDelay });
+    return collectImages(page, { minWidth, minHeight });
+  };
+
+  try {
+    return { response, images: await scrollAndCollect() };
+  } catch (err) {
+    if (!RETRYABLE_ERROR.test(err.message)) throw err;
+    await new Promise((resolve) => {
+      setTimeout(resolve, 1500);
+    });
+    return { response, images: await scrollAndCollect() };
+  }
+}

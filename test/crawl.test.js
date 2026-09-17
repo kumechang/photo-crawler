@@ -4,7 +4,7 @@ import { mkdtemp, rm, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import { launchBrowser, newPage } from '../src/browser.js';
-import { autoScroll, collectImages } from '../src/scrape.js';
+import { autoScroll, collectImages, gotoAndCollect } from '../src/scrape.js';
 import { downloadImage } from '../src/downloader.js';
 import { slugify } from '../src/utils/slug.js';
 import { runWithConcurrency } from '../src/utils/pool.js';
@@ -54,6 +54,35 @@ test('collectImages: サイズでフィルタし、srcsetから最大解像度�
   } finally {
     await page.close();
   }
+});
+
+test('gotoAndCollect: domcontentloadedで待ち、img出現後に収集する', async () => {
+  const page = await newPage(browser);
+  try {
+    const { response, images } = await gotoAndCollect(page, `${baseUrl}/`, {
+      minWidth: 200,
+      minHeight: 150,
+      scrollSteps: 1,
+      scrollDelay: 50,
+    });
+    assert.ok(response.ok());
+    assert.ok(images.length >= 3);
+    assert.ok(!images.some((img) => img.imageUrl.includes('icon.png')));
+  } finally {
+    await page.close();
+  }
+});
+
+test('downloadImage: filenamePrefixを指定するとファイル名にキーワードが入る', async () => {
+  const result = await downloadImage({
+    imageUrl: `${baseUrl}/img/photo1.png`,
+    pageUrl: `${baseUrl}/photo/1`,
+    destDir: tmpDir,
+    userAgent: 'test-agent',
+    filenamePrefix: 'ultimate-frisbee-game',
+    minBytes: 10,
+  });
+  assert.match(result.filename, /^ultimate-frisbee-game-[0-9a-f]{16}\.png$/);
 });
 
 test('downloadImage: 画像を保存し、拡張子とバイト数を返す', async () => {

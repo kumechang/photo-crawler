@@ -16,6 +16,7 @@ export async function downloadImage({
   pageUrl,
   destDir,
   userAgent,
+  filenamePrefix,
   minBytes = 8000,
   timeoutMs = 20000,
 }) {
@@ -53,7 +54,8 @@ export async function downloadImage({
 
   const ext = EXT_BY_MIME[contentType] || path.extname(new URL(imageUrl).pathname) || '.jpg';
   const hash = crypto.createHash('sha1').update(imageUrl).digest('hex').slice(0, 16);
-  const filename = `${hash}${ext}`;
+  // ファイル単体を見ても取得元キーワードが分かるよう、ファイル名にキーワードを含める。
+  const filename = filenamePrefix ? `${filenamePrefix}-${hash}${ext}` : `${hash}${ext}`;
   const filePath = path.join(destDir, filename);
 
   await new Promise((resolve, reject) => {

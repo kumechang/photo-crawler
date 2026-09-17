@@ -1,4 +1,4 @@
-import { autoScroll, collectImages } from '../scrape.js';
+import { gotoAndCollect } from '../scrape.js';
 
 export const id = 'gratisography';
 export const label = 'Gratisography';
@@ -10,8 +10,6 @@ export function buildSearchUrl() {
 }
 
 export async function crawl(page, _keyword, { limit = 30 } = {}) {
-  await page.goto(buildSearchUrl(), { waitUntil: 'networkidle2', timeout: 45000 });
-  await autoScroll(page, { steps: 4 });
-  const images = await collectImages(page, { minWidth: 200, minHeight: 150 });
+  const { images } = await gotoAndCollect(page, buildSearchUrl());
   return images.slice(0, limit);
 }
