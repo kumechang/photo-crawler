@@ -1,0 +1,17 @@
+{
+  "name": "photo-crawler",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "フリー素材サイトをキーワード検索して画像を幅広く収集するクローラー",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "crawl": "node src/index.js",
+    "test": "node --test test/"
+  },
+  "dependencies": {
+    "puppeteer": "^25.11.0"
+  }
+}

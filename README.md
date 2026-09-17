@@ -1,0 +1,76 @@
+# photo-crawler
+
+Webサイト制作用に、フリー素材サイトからキーワードに合致する写真を幅広く収集するクローラーです。
+Puppeteer でヘッドレスブラウザを操作し、検索結果ページに表示された画像を自動でダウンロードします。
+
+## 対応サイト
+
+| サイトID | サイト | 備考 |
+| --- | --- | --- |
+| `unsplash` | [Unsplash](https://unsplash.com/ja) | |
+| `pexels` | [Pexels](https://www.pexels.com/ja-jp/) | |
+| `pixabay` | [Pixabay](https://pixabay.com/ja/) | |
+| `kaboompics` | [Kaboompics](https://kaboompics.com/) | 検索URLの形式が未確認のため動作しない場合あり |
+| `gratisography` | [Gratisography](https://gratisography.com/) | キーワード検索非対応。トップページのギャラリーから収集 |
+| `shopify-burst` | [Shopify (Burst)](https://www.shopify.com/stock-photos) | `burst.shopify.com` にリダイレクトされるため直接アクセス |
+| `foodiesfeed` | [Foodiesfeed](https://www.foodiesfeed.com/) | |
+
+## 重要な注意事項
+
+- **公式APIがある場合はそちらの利用を推奨します。** Unsplash / Pexels / Pixabay は無料の公式APIを提供しており、スクレイピングよりも安定して取得できます。本ツールはAPIキー登録なしで手軽に試せることを優先していますが、継続的に使う場合は公式APIへの切り替えを検討してください。
+- 各サイトの**利用規約・ライセンスを確認してください**。素材によっては著作者へのクレジット表記（リンク）が必要、商用利用に制限がある等のケースがあります。特に Kaboompics は無料ライセンスでもクレジット表記（バックリンク）が求められます。
+- 各サイトはDOM構造やBot対策を予告なく変更することがあります。本ツールは特定のクラス名に依存しすぎないよう、ページ内の `img` 要素を広く走査する汎用ロジックで実装していますが、**取得できないサイトが出てきたら、そのサイトはスキップして先に進む**設計になっています（1サイトの失敗が他サイトに影響しません）。
+- スクレイピングは自己責任で行ってください。過度な高頻度アクセスは行わないよう、サイトごとに1ページ分の検索結果のみを取得する設計にしています。
+
+## セットアップ
+
+```bash
+npm install
+```
+
+初回 `npm install` 時に Puppeteer が Chromium を自動ダウンロードします（数十MB〜100MB程度）。
+すでに別途 Chromium/Chrome を用意している場合は、環境変数 `PUPPETEER_EXECUTABLE_PATH` にその実行ファイルパスを指定すると、そちらを利用します。
+
+## 使い方
+
+```bash
+npm run crawl -- --keyword "coffee" --limit 20
+```
+
+複数キーワード、サイト指定の例:
+
+```bash
+npm run crawl -- --keyword "coffee,office" --limit 15 --sites unsplash,pexels,pixabay
+```
+
+### オプション
+
+| オプション | 説明 | デフォルト |
+| --- | --- | --- |
+| `-k, --keyword` | 検索キーワード（カンマ区切りで複数指定可）※必須 | - |
+| `-l, --limit` | サイトごとの取得上限枚数 | `20` |
+| `-s, --sites` | 対象サイトIDをカンマ区切りで指定（省略時は全サイト） | 全サイト |
+| `-o, --out` | 出力先ディレクトリ | `photos` |
+| `--concurrency` | 同時ダウンロード数 | `4` |
+| `--min-bytes` | このバイト数未満のファイルは除外（アイコン等の誤取得防止） | `8000` |
+| `--no-headless` | ブラウザ画面を表示して実行（デバッグ用） | headless |
+| `-h, --help` | ヘルプ表示 | - |
+
+## 出力構成
+
+```
+photos/
+  <キーワード>/
+    manifest.json   # 取得した画像のメタデータ（サイト・元URL・ファイル名など）
+    CREDITS.md      # サイトごとのクレジット・出典リンク一覧
+    <hash>.jpg
+    <hash>.png
+    ...
+```
+
+- 同じキーワードで再実行すると、`manifest.json` を見て既にダウンロード済みのURLはスキップし、新規分のみ追加取得します。
+- ダウンロードした画像はそのままリポジトリにコミットして管理する想定です（`.gitignore` では除外していません）。大量・大容量の画像をコミットするとリポジトリサイズが肥大化する点に留意してください。
+
+## 動作確認について
+
+このツールは実際のフリー素材サイトの最新DOM構造に依存するため、サイト側の仕様変更で個々のサイトの取得が失敗することがあります。失敗したサイトはログに警告を出して自動でスキップし、他のサイトの処理を継続します。動作しないサイトが出た場合は、`src/sites/<サイト名>.js` の `buildSearchUrl` や `crawl` 内のフィルタ条件を実際のページ構造に合わせて調整してください。
