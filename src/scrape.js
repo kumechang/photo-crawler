@@ -99,7 +99,11 @@ export async function gotoAndCollect(
   url,
   { minWidth = 200, minHeight = 150, scrollSteps = 5, scrollDelay = 600, timeout = 45000 } = {}
 ) {
-  const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout });
+  // 'domcontentloaded' だけだとPexelsのようにクライアント側で写真グリッドを
+  // 後から描画するサイトで、ヘッダーのロゴ img しかない段階で収集してしまい0件になった。
+  // 'load' なら初期リソース読み込み完了まで待つので、常時通信し続けるサイト
+  // (Foodiesfeedなど)でのタイムアウトを避けつつ、グリッド初期描画は待てる。
+  const response = await page.goto(url, { waitUntil: 'load', timeout });
   await page.waitForSelector('img', { timeout: 15000 }).catch(() => {});
 
   const scrollAndCollect = async () => {
