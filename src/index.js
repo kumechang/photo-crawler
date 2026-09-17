@@ -25,7 +25,7 @@ function printHelp() {
   -h, --help              このヘルプを表示
 
 サイトID一覧:
-  unsplash, pexels, pixabay, kaboompics, gratisography, shopify-burst, foodiesfeed
+  unsplash, pexels, pixabay, gratisography, shopify-burst, foodiesfeed
 
 例:
   npm run crawl -- --keyword "coffee,cafe" --limit 15 --sites unsplash,pexels

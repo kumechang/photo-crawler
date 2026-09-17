@@ -10,7 +10,6 @@ Puppeteer でヘッドレスブラウザを操作し、検索結果ページに�
 | `unsplash` | [Unsplash](https://unsplash.com/ja) | |
 | `pexels` | [Pexels](https://www.pexels.com/ja-jp/) | |
 | `pixabay` | [Pixabay](https://pixabay.com/ja/) | |
-| `kaboompics` | [Kaboompics](https://kaboompics.com/) | 検索URLの形式が未確認のため動作しない場合あり |
 | `gratisography` | [Gratisography](https://gratisography.com/) | キーワード検索非対応。トップページのギャラリーから収集 |
 | `shopify-burst` | [Shopify (Burst)](https://www.shopify.com/stock-photos) | `burst.shopify.com` にリダイレクトされるため直接アクセス |
 | `foodiesfeed` | [Foodiesfeed](https://www.foodiesfeed.com/) | |
@@ -18,7 +17,7 @@ Puppeteer でヘッドレスブラウザを操作し、検索結果ページに�
 ## 重要な注意事項
 
 - **公式APIがある場合はそちらの利用を推奨します。** Unsplash / Pexels / Pixabay は無料の公式APIを提供しており、スクレイピングよりも安定して取得できます。本ツールはAPIキー登録なしで手軽に試せることを優先していますが、継続的に使う場合は公式APIへの切り替えを検討してください。
-- 各サイトの**利用規約・ライセンスを確認してください**。素材によっては著作者へのクレジット表記（リンク）が必要、商用利用に制限がある等のケースがあります。特に Kaboompics は無料ライセンスでもクレジット表記（バックリンク）が求められます。
+- 各サイトの**利用規約・ライセンスを確認してください**。素材によっては著作者へのクレジット表記（リンク）が必要、商用利用に制限がある等のケースがあります。
 - 各サイトはDOM構造やBot対策を予告なく変更することがあります。本ツールは特定のクラス名に依存しすぎないよう、ページ内の `img` 要素を広く走査する汎用ロジックで実装していますが、**取得できないサイトが出てきたら、そのサイトはスキップして先に進む**設計になっています（1サイトの失敗が他サイトに影響しません）。
 - スクレイピングは自己責任で行ってください。過度な高頻度アクセスは行わないよう、サイトごとに1ページ分の検索結果のみを取得する設計にしています。
 
@@ -42,6 +41,8 @@ npm run crawl -- --keyword "coffee" --limit 20
 ```bash
 npm run crawl -- --keyword "coffee,office" --limit 15 --sites unsplash,pexels,pixabay
 ```
+
+> Kaboompicsは対応サイトから外しました。検索URLの形式が実際のサイトと合っておらず（404）、トップページへのフォールバックを試しても画像を検出できなかったためです（実クロールで13回連続で0件）。おそらく画像が通常の`<img>`タグではなくCSS背景画像やJS描画コンポーネントで構成されており、本ツールの汎用スクレイパーの前提と合っていません。
 
 ### オプション
 
