@@ -19,6 +19,14 @@ export async function crawl(page, keyword, { limit = 30 } = {}) {
     console.log(
       `[O-DAN] デバッグ: status=${response?.status()} url=${page.url()} title="${title}"`
     );
+    const counts = await page
+      .evaluate(() => ({
+        imgTags: document.querySelectorAll('img').length,
+        bgStyleEls: document.querySelectorAll('[style*="background"]').length,
+        iframes: document.querySelectorAll('iframe').length,
+      }))
+      .catch(() => null);
+    console.log(`[O-DAN] デバッグ: 要素数=${JSON.stringify(counts)}`);
   }
   return images
     .filter((img) => !/logo|avatar|banner|icon-|o-dan\.net\/(img|assets)/i.test(img.imageUrl))
