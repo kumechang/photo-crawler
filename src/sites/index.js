@@ -4,6 +4,9 @@ import * as pixabay from './pixabay.js';
 import * as gratisography from './gratisography.js';
 import * as shopifyBurst from './shopify.js';
 import * as foodiesfeed from './foodiesfeed.js';
+import * as pakutaso from './pakutaso.js';
+import * as photoac from './photoac.js';
+import * as odan from './odan.js';
 
 export const SITES = [
   unsplash,
@@ -12,6 +15,9 @@ export const SITES = [
   gratisography,
   shopifyBurst,
   foodiesfeed,
+  pakutaso,
+  photoac,
+  odan,
 ];
 
 export function getSites(ids) {
