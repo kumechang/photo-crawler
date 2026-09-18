@@ -13,7 +13,13 @@ export function buildSearchUrl(keyword) {
 }
 
 export async function crawl(page, keyword, { limit = 30 } = {}) {
-  const { images } = await gotoAndCollect(page, buildSearchUrl(keyword));
+  const { response, images } = await gotoAndCollect(page, buildSearchUrl(keyword));
+  if (images.length === 0) {
+    const title = await page.title().catch(() => '');
+    console.log(
+      `[O-DAN] デバッグ: status=${response?.status()} url=${page.url()} title="${title}"`
+    );
+  }
   return images
     .filter((img) => !/logo|avatar|banner|icon-|o-dan\.net\/(img|assets)/i.test(img.imageUrl))
     .slice(0, limit);
