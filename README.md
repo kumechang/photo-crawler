@@ -13,6 +13,9 @@ Puppeteer でヘッドレスブラウザを操作し、検索結果ページに�
 | `gratisography` | [Gratisography](https://gratisography.com/) | キーワード検索非対応。トップページのギャラリーから収集 |
 | `shopify-burst` | [Shopify (Burst)](https://www.shopify.com/stock-photos) | `burst.shopify.com` にリダイレクトされるため直接アクセス |
 | `foodiesfeed` | [Foodiesfeed](https://www.foodiesfeed.com/) | |
+| `pakutaso` | [ぱくたそ](https://www.pakutaso.com/) | |
+| `photo-ac` | [写真AC](https://www.photo-ac.com/) | ログイン不要で閲覧できるプレビュー画像のみ収集。ダウンロード（透かしなし本画像）には無料会員登録・ログインが必要な仕様のため未対応 |
+| `o-dan` | [O-DAN](https://o-dan.net/) | 複数のフリー素材サイトを横断検索するメタ検索エンジン。日本語キーワードの自動翻訳検索に対応。1件ごとに元サイト（ライセンス）が異なるため`pageUrl`で必ず元サイトを確認すること |
 
 ## 重要な注意事項
 

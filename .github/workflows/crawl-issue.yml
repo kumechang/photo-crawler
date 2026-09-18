@@ -13,6 +13,10 @@ on:
         description: 'サイトごとの取得上限枚数'
         required: false
         default: '15'
+      sites:
+        description: '対象サイトIDをカンマ区切りで指定（省略時は全サイト）'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -69,7 +73,13 @@ jobs:
         env:
           KEYWORD: ${{ steps.keyword.outputs.value }}
           LIMIT: ${{ github.event.inputs.limit }}
-        run: node src/index.js --keyword "$KEYWORD" --limit "$LIMIT" --out photos
+          SITES: ${{ github.event.inputs.sites }}
+        run: |
+          if [ -n "$SITES" ]; then
+            node src/index.js --keyword "$KEYWORD" --limit "$LIMIT" --sites "$SITES" --out photos
+          else
+            node src/index.js --keyword "$KEYWORD" --limit "$LIMIT" --out photos
+          fi
 
       - name: Commit and push results
         id: commit
