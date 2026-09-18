@@ -14,7 +14,6 @@ Puppeteer でヘッドレスブラウザを操作し、検索結果ページに�
 | `shopify-burst` | [Shopify (Burst)](https://www.shopify.com/stock-photos) | `burst.shopify.com` にリダイレクトされるため直接アクセス |
 | `foodiesfeed` | [Foodiesfeed](https://www.foodiesfeed.com/) | |
 | `pakutaso` | [ぱくたそ](https://www.pakutaso.com/) | |
-| `o-dan` | [O-DAN](https://o-dan.net/) | 複数のフリー素材サイトを横断検索するメタ検索エンジン。日本語キーワードの自動翻訳検索に対応。1件ごとに元サイト（ライセンス）が異なるため`pageUrl`で必ず元サイトを確認すること |
 
 ## 重要な注意事項
 
@@ -47,6 +46,8 @@ npm run crawl -- --keyword "coffee,office" --limit 15 --sites unsplash,pexels,pi
 > Kaboompicsは対応サイトから外しました。検索URLの形式が実際のサイトと合っておらず（404）、トップページへのフォールバックを試しても画像を検出できなかったためです（実クロールで13回連続で0件）。おそらく画像が通常の`<img>`タグではなくCSS背景画像やJS描画コンポーネントで構成されており、本ツールの汎用スクレイパーの前提と合っていません。
 >
 > 写真ACも対応サイトから外しました。検索ページへのアクセスがCDN側のボット対策で拒否され（HTTP 403、「ERROR: The request could not be satisfied」というCloudFront系のブロック画面が返る）、ログイン有無に関わらずヘッドレスブラウザからは検索結果自体を取得できなかったためです。
+>
+> O-DANも対応サイトから外しました。ページ自体はHTTP 200・正しいタイトルで読み込めるものの、スクロール・待機後も`<img>`要素・CSS背景画像・iframeのいずれも0件で、検索結果が本ツールの待機時間内にDOM上へ描画されないためです（JSによる遅延描画やShadow DOM等、汎用スクレイパーの前提と合っていないと考えられます）。
 
 ### オプション
 

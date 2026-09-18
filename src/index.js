@@ -26,7 +26,7 @@ function printHelp() {
 
 サイトID一覧:
   unsplash, pexels, pixabay, gratisography, shopify-burst, foodiesfeed,
-  pakutaso, o-dan
+  pakutaso
 
 例:
   npm run crawl -- --keyword "coffee,cafe" --limit 15 --sites unsplash,pexels
